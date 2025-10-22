@@ -11,6 +11,6 @@ This repo contains the lab work for the Kubernetes course.
 6. [Admission](admission/README.md)
 7. [ArgoCD](argocd/README.md)
 8. [BlueGreen](argocd/rollouts-bluegreen-lab.md)
-9. [Database operator: PostgreSql](cloudnativepg/README.md)
+9. [Database operator: PostgreSql](cloudnativepg/README.md) or 
    [Database operator: MongoDb](percona-mongodb/README.md)
 
