@@ -5,8 +5,15 @@ metadata:
   labels:
     app: mysql
 data:
-  my.cnf: |
+  my-master.cnf: |
     [mysqld]
     server-id=1
     log-bin=mysql-bin
-    # Add more config as needed
+    binlog_format=ROW
+  my-replica.cnf: |
+    [mysqld]
+    server-id=2
+    log-bin=mysql-bin
+    binlog_format=ROW
+    relay-log=relay-bin
+    read_only=1

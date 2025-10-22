@@ -10,14 +10,18 @@ This lab demonstrates how to deploy a production-ready MySQL database cluster us
 ## Lab Steps
 
 1. **Create a Secret for MySQL root password**
-2. **Create a ConfigMap for MySQL configuration**
+2. **Create ConfigMaps for MySQL master and replica configuration, and for the replica initialization script**
 3. **Deploy a headless Service for stable network identity**
-4. **Deploy a StatefulSet for MySQL pods with persistent storage**
-5. **(Optional) Deploy a MySQL client pod for testing**
+4. **Deploy a StatefulSet for MySQL master and replicas with persistent storage and replication setup**
+5. **Deploy a MySQL client pod for testing and initialization**
 
 ## Files
 - `mysql-secret.yaml`: Secret for root password
-- `mysql-configmap.yaml`: ConfigMap for MySQL config
+- `mysql-configmap.yaml`: ConfigMap for MySQL master and replica configs
+- `replica-init-script.yaml`: ConfigMap for replica initialization script
+- `my-master.cnf`: MySQL config for master
+- `my-replica.cnf`: MySQL config for replicas
+- `replica-init.sh`: Script to initialize replication on replicas
 - `mysql-service.yaml`: Headless Service for MySQL
 - `mysql-statefulset.yaml`: StatefulSet for MySQL
 - `mysql-client.yaml`: MySQL client pod (optional)
@@ -46,25 +50,84 @@ kubectl apply -f mysql-secret.yaml
 ```
 
 ## 2. Create a ConfigMap for MySQL configuration
+
+Create two config files for master and replica, and a ConfigMap for the replica initialization script:
+
+**my-master.cnf**
+```ini
+[mysqld]
+server-id=1
+log-bin=mysql-bin
+binlog_format=ROW
+```
+
+**my-replica.cnf**
+```ini
+[mysqld]
+server-id=2
+log-bin=mysql-bin
+binlog_format=ROW
+relay-log=relay-bin
+read_only=1
+```
+
+**mysql-configmap.yaml**
 ```yaml
-# mysql-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql-config
   labels:
     app: mysql
-  
 data:
-  my.cnf: |
+  my-master.cnf: |
     [mysqld]
     server-id=1
     log-bin=mysql-bin
-    # Add more config as needed
+    binlog_format=ROW
+  my-replica.cnf: |
+    [mysqld]
+    server-id=2
+    log-bin=mysql-bin
+    binlog_format=ROW
+    relay-log=relay-bin
+    read_only=1
 ```
 Apply with:
 ```sh
 kubectl apply -f mysql-configmap.yaml
+```
+
+**replica-init-script.yaml**
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: replica-init-script
+  labels:
+    app: mysql
+data:
+  replica-init.sh: |
+    #!/bin/bash
+    set -e
+    MASTER_HOST="mysql-0.mysql"
+    MASTER_USER="root"
+    MASTER_PASSWORD="$MYSQL_ROOT_PASSWORD"
+    until mysqladmin ping -h "$MASTER_HOST" --silent; do
+      echo "Waiting for master..."
+      sleep 5
+    done
+    if [ "$HOSTNAME" == "mysql-1" ] || [ "$HOSTNAME" == "mysql-2" ]; then
+      mysql -h "$MASTER_HOST" -u "$MASTER_USER" -p"$MASTER_PASSWORD" -e "CREATE USER IF NOT EXISTS 'replica'@'%' IDENTIFIED BY 'replica_pass'; GRANT REPLICATION SLAVE ON *.* TO 'replica'@'%'; FLUSH PRIVILEGES;"
+      STATUS=$(mysql -h "$MASTER_HOST" -u "$MASTER_USER" -p"$MASTER_PASSWORD" -e "SHOW MASTER STATUS;" | awk 'NR==2 {print $1,$2}')
+      FILE=$(echo $STATUS | awk '{print $1}')
+      POS=$(echo $STATUS | awk '{print $2}')
+      mysql -u "$MASTER_USER" -p"$MASTER_PASSWORD" -e "CHANGE MASTER TO MASTER_HOST='$MASTER_HOST', MASTER_USER='replica', MASTER_PASSWORD='replica_pass', MASTER_LOG_FILE='$FILE', MASTER_LOG_POS=$POS; START SLAVE;"
+    fi
+```
+Apply with:
+```sh
+kubectl apply -f replica-init-script.yaml
 ```
 
 ## 3. Create a Headless Service
@@ -123,13 +186,24 @@ spec:
           mountPath: /etc/mysql/conf.d
         - name: data
           mountPath: /var/lib/mysql
+        - name: replica-init
+          mountPath: /docker-entrypoint-initdb.d/replica-init.sh
+          subPath: replica-init.sh
       volumes:
       - name: config
         configMap:
           name: mysql-config
           items:
-          - key: my.cnf
-            path: my.cnf
+          - key: my-master.cnf
+            path: my-master.cnf
+          - key: my-replica.cnf
+            path: my-replica.cnf
+      - name: replica-init
+        configMap:
+          name: replica-init-script
+          items:
+          - key: replica-init.sh
+            path: replica-init.sh
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -224,6 +298,32 @@ mysql -h "$MYSQL_HOST" -u "$MYSQL_USER" -p"$MYSQL_ROOT_PASSWORD"
 
 ```
 
+### Read/Write Splitting with Dedicated Services
+
+To use the dedicated services for master and replicas:
+
+**Apply the services:**
+```sh
+kubectl label pod mysql-1 role=replica
+kubectl label pod mysql-2 role=replica
+
+kubectl apply -f mysql-master-service.yaml
+kubectl apply -f mysql-replicas-service.yaml
+
+```
+
+**Connect for writes (master):**
+```sh
+mysql -h mysql-master -u "$MYSQL_USER" -p"$MYSQL_ROOT_PASSWORD"
+```
+
+**Connect for reads (replicas):**
+```sh
+mysql -h mysql-replicas -u "$MYSQL_USER" -p"$MYSQL_ROOT_PASSWORD"
+```
+
+You can use these service endpoints in your applications to direct write queries to the master and read queries to the replicas.
+
 
 ---
 
@@ -238,5 +338,13 @@ kubectl delete -f mysql-secret.yaml
 
 ## Discussion
 - What are the limitations of this approach?
+  - Manual setup and recovery for replication and failover
+  - No automatic failover or self-healing for master node
+  - Replication setup is basic and not production-grade
 - How would you handle backups, upgrades, and failover?
+  - Use MySQL backup tools and scripts
+  - Manually promote a replica to master if the master fails
+  - Monitor replication status and automate with custom scripts if needed
 - Compare with operator-based solutions.
+  - Operators automate replication, failover, backups, and upgrades
+  - Manual setup is good for learning, but operators are recommended for production

@@ -4,6 +4,7 @@ metadata:
   name: mysql
   labels:
     app: mysql
+    role: replica
 spec:
   serviceName: mysql
   replicas: 3
@@ -24,18 +25,33 @@ spec:
             secretKeyRef:
               name: mysql-root-password
               key: MYSQL_ROOT_PASSWORD
+        - name: POD_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         volumeMounts:
         - name: config
           mountPath: /etc/mysql/conf.d
         - name: data
           mountPath: /var/lib/mysql
+        - name: replica-init
+          mountPath: /docker-entrypoint-initdb.d/replica-init.sh
+          subPath: replica-init.sh
       volumes:
       - name: config
         configMap:
           name: mysql-config
           items:
-          - key: my.cnf
-            path: my.cnf
+          - key: my-master.cnf
+            path: my-master.cnf
+          - key: my-replica.cnf
+            path: my-replica.cnf
+      - name: replica-init
+        configMap:
+          name: replica-init-script
+          items:
+          - key: replica-init.sh
+            path: replica-init.sh
   volumeClaimTemplates:
   - metadata:
       name: data
