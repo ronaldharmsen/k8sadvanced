@@ -37,10 +37,19 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 Open [http://localhost:8080](http://localhost:8080) in your browser.
 
-Get the initial admin password:
+Get the initial admin password (MacOS or Linux):
 ```sh
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
 ```
+
+-or-
+
+if you're on Windows, use this statement instead:
+
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | % { [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
+```
+
 Login with username `admin` and the password above.
 
 ## Step 3: Deploy an Application with ArgoCD
