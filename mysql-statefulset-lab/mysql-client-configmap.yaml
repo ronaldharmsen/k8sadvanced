@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-client-config
+data:
+  MYSQL_HOST: "mysql-0.mysql"
+  MYSQL_USER: "root"

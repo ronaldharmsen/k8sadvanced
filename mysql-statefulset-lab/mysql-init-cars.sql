@@ -1,0 +1,68 @@
+-- Create test database
+CREATE DATABASE IF NOT EXISTS testdb;
+USE testdb;
+
+-- Create cars table
+CREATE TABLE IF NOT EXISTS cars (
+  licenseplate VARCHAR(16) PRIMARY KEY,
+  vin VARCHAR(32) NOT NULL,
+  make VARCHAR(32) NOT NULL,
+  model VARCHAR(32) NOT NULL,
+  year INT NOT NULL,
+  fuel ENUM('petrol', 'diesel', 'electric') NOT NULL
+);
+
+-- Insert sample data
+INSERT INTO cars (licenseplate, vin, make, model, year, fuel) VALUES
+('ABC123', '1HGCM82633A004352', 'Toyota', 'Corolla', 2018, 'petrol'),
+('DEF456', '1HGCM82633A004353', 'Honda', 'Civic', 2019, 'petrol'),
+('GHI789', '1HGCM82633A004354', 'Ford', 'Focus', 2017, 'diesel'),
+('JKL012', '1HGCM82633A004355', 'Tesla', 'Model 3', 2021, 'electric'),
+('MNO345', '1HGCM82633A004356', 'Volkswagen', 'Golf', 2016, 'diesel'),
+('PQR678', '1HGCM82633A004357', 'BMW', '3 Series', 2020, 'petrol'),
+('STU901', '1HGCM82633A004358', 'Audi', 'A4', 2015, 'diesel'),
+('VWX234', '1HGCM82633A004359', 'Mercedes', 'C-Class', 2018, 'petrol'),
+('YZA567', '1HGCM82633A004360', 'Hyundai', 'Ioniq', 2022, 'electric'),
+('BCD890', '1HGCM82633A004361', 'Kia', 'Niro', 2021, 'electric'),
+('EFG123', '1HGCM82633A004362', 'Renault', 'Clio', 2017, 'petrol'),
+('HIJ456', '1HGCM82633A004363', 'Peugeot', '208', 2018, 'diesel'),
+('KLM789', '1HGCM82633A004364', 'Opel', 'Astra', 2019, 'petrol'),
+('NOP012', '1HGCM82633A004365', 'Fiat', '500', 2020, 'petrol'),
+('QRS345', '1HGCM82633A004366', 'Skoda', 'Octavia', 2016, 'diesel'),
+('TUV678', '1HGCM82633A004367', 'Seat', 'Leon', 2017, 'petrol'),
+('WXY901', '1HGCM82633A004368', 'Mazda', '3', 2018, 'petrol'),
+('ZAB234', '1HGCM82633A004369', 'Subaru', 'Impreza', 2019, 'petrol'),
+('CDE567', '1HGCM82633A004370', 'Nissan', 'Leaf', 2022, 'electric'),
+('FGH890', '1HGCM82633A004371', 'Chevrolet', 'Bolt', 2021, 'electric'),
+('IJK123', '1HGCM82633A004372', 'Jaguar', 'XE', 2018, 'diesel'),
+('LMN456', '1HGCM82633A004373', 'Land Rover', 'Discovery', 2017, 'diesel'),
+('OPQ789', '1HGCM82633A004374', 'Volvo', 'XC40', 2020, 'petrol'),
+('RST012', '1HGCM82633A004375', 'Mini', 'Cooper', 2019, 'petrol'),
+('UVW345', '1HGCM82633A004376', 'Suzuki', 'Swift', 2016, 'petrol'),
+('XYZ678', '1HGCM82633A004377', 'Mitsubishi', 'Outlander', 2021, 'petrol'),
+('ABC234', '1HGCM82633A004378', 'Citroen', 'C3', 2017, 'diesel'),
+('DEF567', '1HGCM82633A004379', 'Dacia', 'Sandero', 2018, 'petrol'),
+('GHI890', '1HGCM82633A004380', 'Alfa Romeo', 'Giulia', 2019, 'petrol'),
+('JKL123', '1HGCM82633A004381', 'Lexus', 'IS', 2020, 'petrol'),
+('MNO456', '1HGCM82633A004382', 'Honda', 'Accord', 2016, 'petrol'),
+('PQR789', '1HGCM82633A004383', 'Toyota', 'Prius', 2021, 'electric'),
+('STU012', '1HGCM82633A004384', 'Ford', 'Mondeo', 2017, 'diesel'),
+('VWX345', '1HGCM82633A004385', 'Volkswagen', 'Passat', 2018, 'diesel'),
+('YZA678', '1HGCM82633A004386', 'BMW', 'i3', 2022, 'electric'),
+('BCD901', '1HGCM82633A004387', 'Audi', 'e-tron', 2021, 'electric'),
+('EFG234', '1HGCM82633A004388', 'Mercedes', 'EQC', 2020, 'electric'),
+('HIJ567', '1HGCM82633A004389', 'Hyundai', 'Kona', 2019, 'electric'),
+('KLM890', '1HGCM82633A004390', 'Kia', 'Soul', 2018, 'electric'),
+('NOP123', '1HGCM82633A004391', 'Renault', 'Zoe', 2017, 'electric'),
+('QRS456', '1HGCM82633A004392', 'Peugeot', 'e-208', 2022, 'electric'),
+('TUV789', '1HGCM82633A004393', 'Opel', 'Corsa-e', 2021, 'electric'),
+('WXY012', '1HGCM82633A004394', 'Fiat', 'Panda', 2016, 'petrol'),
+('ZAB345', '1HGCM82633A004395', 'Skoda', 'Superb', 2017, 'diesel'),
+('CDE678', '1HGCM82633A004396', 'Seat', 'Ibiza', 2018, 'petrol'),
+('FGH901', '1HGCM82633A004397', 'Mazda', 'CX-5', 2019, 'petrol'),
+('IJK234', '1HGCM82633A004398', 'Subaru', 'Forester', 2020, 'petrol'),
+('LMN567', '1HGCM82633A004399', 'Nissan', 'Qashqai', 2016, 'diesel'),
+('OPQ890', '1HGCM82633A004400', 'Chevrolet', 'Malibu', 2017, 'petrol'),
+('RST123', '1HGCM82633A004401', 'Jaguar', 'F-Pace', 2018, 'diesel'),
+('UVW456', '1HGCM82633A004402', 'Land Rover', 'Range Rover', 2019, 'diesel'),
+('XYZ789', '1HGCM82633A004403', 'Volvo', 'V60', 2020, 'petrol');
