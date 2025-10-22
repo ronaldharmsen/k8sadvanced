@@ -97,6 +97,39 @@ If you do not have the MongoDB shell (`mongo`) installed on your Windows machine
 ## Step 6: Backup and Restore (Optional Advanced)
 
 1. **Enable backup in the manifest and apply changes.**
+   
+   **!! Important: This will only work with some cloud or netwerk storage**, so might not be available in your lab environment.
+   Alternatively you can have a look below or investigate in the documentation.
+   
+   Below is an example of how to configure a backup that stores to an AWS s3 (or compatible) storage
+
+    a. Edit your cluster manifest (e.g., `cr.yaml`) and add a backup section under `spec`:
+         ```yaml
+         spec:
+            backup:
+               enabled: true
+               storages:
+                  s3-us-west:
+                     type: s3
+                     s3:
+                        bucket: <your-bucket-name>
+                        region: <your-region>
+                        endpointUrl: <your-s3-endpoint>
+                        credentialsSecret: my-s3-secret
+         ```
+
+    b. Create a secret with your S3 credentials (replace values as needed):
+         ```bash
+         kubectl create secret generic my-s3-secret \
+            --from-literal=AWS_ACCESS_KEY_ID=<your-access-key> \
+            --from-literal=AWS_SECRET_ACCESS_KEY=<your-secret-key> \
+            -n percona-mongodb
+         ```
+
+    c. Apply the updated manifest:
+         ```bash
+         kubectl apply -f cr.yaml -n percona-mongodb
+         ```
 2. **Simulate a restore by deleting a pod and watching it recover.**
 
 ---
