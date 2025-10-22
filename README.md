@@ -8,6 +8,8 @@ This repo contains the lab work for the Kubernetes course.
 3. [Istio](istio/README.md)
 4. [Resource limiting](resource-limiting/README.md)
 5. [Network policies](network-policies/README.md)
+6. [Admission](admission/README.md)
 7. [ArgoCD](argocd/README.md)
 8. [BlueGreen](argocd/rollouts-bluegreen-lab.md)
-9. [Admission](admission/README.md)
+9. [Database operator](cloudnativepg/README.md)
+
