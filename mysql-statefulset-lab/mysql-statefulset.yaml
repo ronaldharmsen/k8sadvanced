@@ -4,7 +4,6 @@ metadata:
   name: mysql
   labels:
     app: mysql
-    role: replica
 spec:
   serviceName: mysql
   replicas: 3
