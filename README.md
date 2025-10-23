@@ -18,3 +18,5 @@ This repo contains the lab work for the Kubernetes course.
 10. [Kubeception: Kubernetes-in-Kubernetes Lab](kubeception-lab/README.md)
 
 11. [Additional: Azure Arc](azure-arc/README.md)
+
+(slides)[https://bit.ly/k8s-oct25-adv]
