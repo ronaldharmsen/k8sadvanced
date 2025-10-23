@@ -20,7 +20,8 @@ In this lab, you'll learn how to deploy a production-grade MongoDB cluster on Ku
    ```
 2. **Install the operator using official manifests:**
    ```bash
-   kubectl apply -f https://raw.githubusercontent.com/percona/percona-server-mongodb-operator/main/deploy/bundle.yaml -n percona-mongodb
+   kubectl apply --server-side -f https://raw.githubusercontent.com/percona/percona-server-mongodb-operator/v1.14.0/deploy/crd.yaml
+kubectl apply -f https://raw.githubusercontent.com/percona/percona-server-mongodb-operator/v1.14.0/deploy/operator.yaml -n percona-mongodb
    ```
 3. **Verify the operator is running:**
    ```bash

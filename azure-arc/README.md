@@ -76,6 +76,21 @@ kubectl label ns azure-arc \
   pod-security.kubernetes.io/audit=privileged \
   pod-security.kubernetes.io/warn=privileged \
   --overwrite
+
+kubectl label namespace azure-arc app.kubernetes.io/managed-by=Helm --overwrite
+kubectl annotate namespace azure-arc meta.helm.sh/release-name=azure-arc --overwrite
+kubectl annotate namespace azure-arc meta.helm.sh/release-namespace=azure-arc-release --overwrite
+
+kubectl create ns azure-arc-release
+kubectl label ns azure-arc-release \
+  pod-security.kubernetes.io/enforce=privileged \
+  pod-security.kubernetes.io/audit=privileged \
+  pod-security.kubernetes.io/warn=privileged \
+  --overwrite
+
+kubectl label namespace azure-arc-release app.kubernetes.io/managed-by=Helm --overwrite
+kubectl annotate namespace azure-arc-release meta.helm.sh/release-name=azure-arc --overwrite
+kubectl annotate namespace azure-arc-release meta.helm.sh/release-namespace=azure-arc-release --overwrite
 ```
 
 ### 5. Validate Connection
