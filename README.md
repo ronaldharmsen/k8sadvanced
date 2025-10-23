@@ -13,4 +13,6 @@ This repo contains the lab work for the Kubernetes course.
 8. [BlueGreen](argocd/rollouts-bluegreen-lab.md)
 9. [Database operator: PostgreSql](cloudnativepg/README.md) or 
    [Database operator: MongoDb](percona-mongodb/README.md)
-
+   vs
+   [MySQL manually](mysql-statefulset-lab)
+10. [Additional: Azure Arc](azure-arc/README.md)
