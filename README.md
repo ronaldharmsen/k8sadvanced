@@ -15,4 +15,6 @@ This repo contains the lab work for the Kubernetes course.
    [Database operator: MongoDb](percona-mongodb/README.md)
    vs
    [MySQL manually](mysql-statefulset-lab)
-10. [Additional: Azure Arc](azure-arc/README.md)
+10. [Kubeception: Kubernetes-in-Kubernetes Lab](kubeception-lab/README.md)
+
+11. [Additional: Azure Arc](azure-arc/README.md)

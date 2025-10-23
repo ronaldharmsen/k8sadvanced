@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k3s-nested
+  labels:
+    app: k3s-nested
+spec:
+  containers:
+    - name: k3s
+      image: rancher/k3s:v1.29.1-k3s1
+      command: ["/bin/sh", "-c", "k3s server & sleep infinity"]
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
+        limits:
+          cpu: "1"
+          memory: "1Gi"
+      volumeMounts:
+        - name: k3s-data
+          mountPath: /var/lib/rancher/k3s
+  volumes:
+    - name: k3s-data
+      emptyDir: {}
+  restartPolicy: Never
